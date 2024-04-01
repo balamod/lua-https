@@ -1,5 +1,6 @@
-name: "Build & Test"
-on: [push, pull_request]
+on:
+  release:
+    types: [created]
 
 jobs:
   macOS:
@@ -10,6 +11,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Get release
+        id: get-release
+        uses: bruceadams/get-release@v1.3.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - name: Download LuaJIT
         uses: actions/checkout@v3
         with:
@@ -39,13 +45,24 @@ jobs:
       - name: Test
         working-directory: ./build/src/Release
         run: ../../../LuaJIT/src/luajit -l "https" ../../../example/test.lua
-      - name: Artifact
-        if: always()
-        uses: actions/upload-artifact@v3
+      - name: upload artifact (aarch64) to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         with:
-          name: https-macos.zip
-          path: build/src/**/https.so
-
+          upload_url: ${{ steps.get-release.outputs.upload_url }}
+          asset_path: build/src/luajit_arm/https.so
+          asset_name: macos-aarch64-https.so
+          asset_content_type: application/octet-stream
+      - name: upload artifact (x86_64) to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.get-release.outputs.upload_url }}
+          asset_path: build/src/luajit_x64/https.so
+          asset_name: macos-x86_64-https.so
+          asset_content_type: application/octet-stream
   Linux:
     name: ${{ matrix.mode.name }}
     runs-on: ubuntu-20.04
@@ -68,6 +85,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Get release
+        id: get-release
+        uses: bruceadams/get-release@v1.3.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - name: Update APT Repository
         run: sudo apt-get update
       - name: Install Dependencies
@@ -84,13 +106,16 @@ jobs:
         if: matrix.mode.artifact == 0
         working-directory: ./install
         run: luajit -l "https" ../example/test.lua
-      - name: Artifact
+      - name: upload artifact to release
         if: matrix.mode.artifact == 1
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         with:
-          name: https-ubuntu.zip
-          path: install/https.so
-
+          upload_url: ${{ steps.get-release.outputs.upload_url }}
+          asset_path: install/https.so
+          asset_name: linux-https.so
+          asset_content_type: application/octet-stream
   Windows:
     runs-on: windows-latest
     strategy:
@@ -104,6 +129,11 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+    - name: Get release
+      id: get-release
+      uses: bruceadams/get-release@v1.3.2
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
     - name: Download LuaJIT
       uses: actions/checkout@v3
       with:
@@ -124,9 +154,12 @@ jobs:
     - name: Test
       working-directory: ./install
       run: ..\LuaJIT\src\luajit ..\example\test.lua
-    - name: Artifact
-      if: always()
-      uses: actions/upload-artifact@v3
+    - name: upload artifact to release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
       with:
-        name: https-windows-${{ matrix.arch }}.zip
-        path: install/https.dll
+        upload_url: ${{ steps.get-release.outputs.upload_url }}
+        asset_path: install/https.dll
+        asset_name: windows-${{ matrix.arch }}-https.dll
+        asset_content_type: application/octet-stream
