@@ -40,7 +40,7 @@ jobs:
         working-directory: ./build/src/Release
         run: ../../../LuaJIT/src/luajit -l "https" ../../../example/test.lua
       - name: list artifacts
-        run: ls -l build/src
+        run: ls -Rl build/src
       - name: Artifact
         if: always()
         uses: actions/upload-artifact@v3
