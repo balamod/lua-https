@@ -10,7 +10,7 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 30
     env:
-      MACOSX_DEPLOYMENT_TARGET: "10.9"
+      MACOSX_DEPLOYMENT_TARGET: "10.13"
     steps:
       - name: Checkout
         uses: actions/checkout@v3
