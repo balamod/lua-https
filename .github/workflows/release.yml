@@ -56,18 +56,10 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.get-release.outputs.upload_url }}
-          asset_path: build/src/luajit_arm/https.so
-          asset_name: macos-aarch64-https.so
+          asset_path: build/src/Release/https.so
+          asset_name: macos-https.so
           asset_content_type: application/octet-stream
-      - name: upload artifact (x86_64) to release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ steps.get-release.outputs.upload_url }}
-          asset_path: build/src/luajit_x64/https.so
-          asset_name: macos-x86_64-https.so
-          asset_content_type: application/octet-stream
+
   Linux:
     name: ${{ matrix.mode.name }}
     runs-on: ubuntu-20.04
