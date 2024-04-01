@@ -1,7 +1,7 @@
 name: "Build & Test"
-on: [push, pull_request]
+on: [push, pull_request, release, workflow_call]
 
-jobs:    
+jobs:
   macOS:
     runs-on: macos-latest
     timeout-minutes: 30

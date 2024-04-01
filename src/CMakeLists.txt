@@ -154,7 +154,7 @@ if (USE_NSURL_BACKEND)
 		https-nsurl
 		PROPERTIES
 		MACOSX_BUNDLE YES
-		XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC YES  
+		XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC YES
 	)
 	target_link_libraries (https "-framework Foundation")
 	target_link_libraries (https https-nsurl)
